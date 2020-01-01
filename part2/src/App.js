@@ -1,8 +1,9 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
 import Note from './components/Note'
 import Course from './components/Course'
 import Phonebook from './components/Phonebook'
+import axios from 'axios'
 
 const notes = [
   {
@@ -26,12 +27,23 @@ const notes = [
 ]
 
 
-const App = (props) => {
+const App = () => {
 
-  const [notes, setNotes] = useState(props.notes)  
+  const [notes, setNotes] = useState([])  
   const [newNote, setNewNote] = useState('a new note...')
   const [showAll, setShowAll] = useState(true)
 
+  useEffect( () => {
+    console.log('effect')
+    axios
+    .get('http://localhost:3001/notes')
+    .then(response => {
+      const notes = response.data
+      console.log('promise fufilled')
+      setNotes(notes)
+     })
+  },[])
+  console.log('render', notes.length, 'notes')
   const notesToShow  = showAll 
   ? notes 
   : notes.filter(note => note.important)

@@ -1,13 +1,17 @@
 import React, {useState} from 'react'
 
-const PersonsInfo = ({name,number}) => {
+const PersonsInfo = ({name,number,filter}) => {
+  console.log('filtering for \'', filter, '\'...')  
+  if(name.search(filter) > -1) //case-sensitive filter for first substring
+{ 
+  console.log('found! name: ',name)
   return(
     <li>
       {name} {number}
     </li>
   )
+} else return(null)
 }
-
 //check if added name exists already
 //when user submits, array is searched. 
 //if defined, then display alert. if undef, add name
@@ -22,6 +26,8 @@ const Phonebook = () => {
     ]) 
     const [ newName, setNewName ] = useState('')
     const [ newNumber, setNewNumber ] = useState('')
+    const [filter, setFilter] = useState('')
+
     const checkName = (event) => {
       event.preventDefault()
       //console.log(event.target)
@@ -63,13 +69,18 @@ const Phonebook = () => {
       setNewNumber(event.target.value)
     }
 
+    const handleFilterChange = (event) => {
+      setFilter(event.target.value)
+      console.log(filter)
+    }
+
   const rows = () => persons.map(
-    person => <PersonsInfo key={person.name} name={person.name} number={person.number}/>
-    )
+    person => <PersonsInfo filter={filter} key={person.name} name={person.name} number={person.number}/>)
 
     return (
       <div>
         <h2>Phonebook</h2>
+        filter: <input onChange={handleFilterChange} />
         <div> debug: {newName} </div>
         <form onSubmit={checkName}>
           <div>
