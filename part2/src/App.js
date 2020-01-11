@@ -1,40 +1,48 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect} from 'react' //,useEffect} from 'react'
 import ReactDOM from 'react-dom'
+import axios from 'axios'
+
 import Note from './components/Note'
 import Course from './components/Course'
 import Phonebook from './components/Phonebook'
-import axios from 'axios'
+import Countries from './components/Countries'
 
-const notes = [
-  {
-    id: 1,
-    content: 'HTML is easy',
-    date: '2019-05-30T17:30:31.098Z',
-    important: true
-  },
-  {
-    id: 2,
-    content: 'Browser can execute only Javascript',
-    date: '2019-05-30T18:39:34.091Z',
-    important: false
-  },
-  {
-    id: 3,
-    content: 'GET and POST are the most important methods of HTTP protocol',
-    date: '2019-05-30T19:20:14.298Z',
-    important: true
-  }
-]
+//notes before effect
+// const notes = [
+//   {
+//     id: 1,
+//     content: 'HTML is easy',
+//     date: '2019-05-30T17:30:31.098Z',
+//     important: true
+//   },
+//   {
+//     id: 2,
+//     content: 'Browser can execute only Javascript',
+//     date: '2019-05-30T18:39:34.091Z',
+//     important: false
+//   },
+//   {
+//     id: 3,
+//     content: 'GET and POST are the most important methods of HTTP protocol',
+//     date: '2019-05-30T19:20:14.298Z',
+//     important: true
+//   }
+// ]
 
+//for useEffect
+//const App = () => {
+const App = (props) => {
 
-const App = () => {
-
+  //for useEffect
   const [notes, setNotes] = useState([])  
+  //for props w/o useEffect
+  //const [notes, setNotes] = useState(props.notes)  
   const [newNote, setNewNote] = useState('a new note...')
   const [showAll, setShowAll] = useState(true)
 
+  //async error with other useEffect examples (e.g. Phonebook useEffect)
   useEffect( () => {
-    console.log('effect')
+    console.log('effect for notes')
     axios
     .get('http://localhost:3001/notes')
     .then(response => {
@@ -43,7 +51,9 @@ const App = () => {
       setNotes(notes)
      })
   },[])
-  console.log('render', notes.length, 'notes')
+
+  // console.log('render', notes.length, 'notes')
+
   const notesToShow  = showAll 
   ? notes 
   : notes.filter(note => note.important)
@@ -122,6 +132,8 @@ const App = () => {
 
   return (
     <div>
+      <h1>Countries</h1>
+      <Countries/>
       <h1>Phonebook</h1>
       <Phonebook/>
       <h1>Notes</h1>
@@ -147,7 +159,7 @@ const App = () => {
 }
 
 ReactDOM.render(
-  <App notes={notes}/>,
+  <App />, //notes={notes} />,
   document.getElementById('root')
 )
 

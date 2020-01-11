@@ -1,10 +1,12 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
+import axios from 'axios'
 
 const PersonsInfo = ({name,number,filter}) => {
-  console.log('filtering for \'', filter, '\'...')  
-  if(name.search(filter) > -1) //case-sensitive filter for first substring
+//  console.log('filtering for \'', filter, '\'...')  
+//case-sensitive filter for first substring
+  if(name.search(filter) > -1) 
 { 
-  console.log('found! name: ',name)
+  //console.log('found! name: ',name)
   return(
     <li>
       {name} {number}
@@ -17,13 +19,27 @@ const PersonsInfo = ({name,number,filter}) => {
 //if defined, then display alert. if undef, add name
 
 const Phonebook = () => {
-    const [ persons, setPersons] = useState([
-      { name: 'Arto Hellas', number: '33-12-24-6456'},    
-      { name: 'Ada Lovelace', number: '39-44-5323523' },
-      { name: 'Dan Abramov', number: '12-43-234345' },
-      { name: 'Mary Poppendieck', number: '39-23-6423122' }
 
-    ]) 
+    //before effect used
+    // const [ persons, setPersons] = useState([
+    //   { name: 'Arto Hellas', number: '33-12-24-6456'},    
+    //   { name: 'Ada Lovelace', number: '39-44-5323523' },
+    //   { name: 'Dan Abramov', number: '12-43-234345' },
+    //   { name: 'Mary Poppendieck', number: '39-23-6423122' }
+    // ]) 
+    const [persons, setPersons] = useState([])
+
+    //fetch persons data from json using useEffect
+    useEffect( () => {
+      console.log('effect from Phonebook')
+      axios
+        .get('http://localhost:3001/persons')
+        .then(response => {
+          const persons = response.data
+          setPersons(persons)
+        })
+    },[])
+
     const [ newName, setNewName ] = useState('')
     const [ newNumber, setNewNumber ] = useState('')
     const [filter, setFilter] = useState('')
@@ -71,7 +87,7 @@ const Phonebook = () => {
 
     const handleFilterChange = (event) => {
       setFilter(event.target.value)
-      console.log(filter)
+      //console.log(filter)
     }
 
   const rows = () => persons.map(
