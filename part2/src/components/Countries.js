@@ -46,11 +46,11 @@ const CountryInfo = ({list,name}) => {
                 <p>
                     Captial: {info.capital} <br/>
                     Population: {info.population} <br/>
-                    <h3> Languages </h3>
+                </p>
+                <h3> Languages </h3>
                     <ul>
                         {info.languages.map(item => <li>{item.name}</li>)}
                     </ul>
-                </p>
                 <img src={info.flag} alt='flag' style={{height:"80px", width: "80px"}}/>
                 </div>
                 ) 
