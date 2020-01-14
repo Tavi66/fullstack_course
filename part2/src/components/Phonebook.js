@@ -4,9 +4,14 @@ import axios from 'axios'
 const PersonsInfo = ({name,number,filter}) => {
 //  console.log('filtering for \'', filter, '\'...')  
 //case-sensitive filter for first substring
-  if(name.search(filter) > -1) 
+const NAME = name.toUpperCase()
+const FILTER = filter.toUpperCase()
+//   const result = () =>  {
+// }
+  if(NAME.search(FILTER) > -1) 
 { 
-  //console.log('found! name: ',name)
+  console.log('name: ', name.toUpperCase())
+  console.log('filter: ', filter.toUpperCase())
   return(
     <li>
       {name} {number}
@@ -48,7 +53,7 @@ const Phonebook = () => {
       event.preventDefault()
       //console.log(event.target)
       //for each obj in arr find if name property matches newName value
-      const result = persons.find( element => {return(element.name === newName)} )
+      const result = persons.filter( element => {return(element.name === newName)} )
       if(result) 
       {
         console.log('result: ',result)
