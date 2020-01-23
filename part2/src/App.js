@@ -62,6 +62,7 @@ const App = (props) => {
     <Note 
          key={note.id} 
          note={note}
+         toggleImportance = {() => toggleImportanceOf(note.id)}
     />
   )
 
@@ -76,6 +77,13 @@ const App = (props) => {
       id:notes.length + 1,
     }
 
+    //axios POST save notes to DB
+    axios
+         .post('http://localhost:3001/notes', noteObj)
+         .then(response => {
+           console.log(response)
+         })
+
     setNotes(notes.concat(noteObj))
     setNewNote('')
 }
@@ -83,6 +91,10 @@ const App = (props) => {
   const handleNoteChange = (event) => {
     console.log(event.target.value)
     setNewNote(event.target.value)
+  }
+
+  const toggleImportanceOf = id => {
+    console.log('Importance of ', id, ' needs to be toggled.')
   }
 
   const course = [{
