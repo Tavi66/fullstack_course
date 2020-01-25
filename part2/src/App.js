@@ -31,8 +31,7 @@ import Countries from './components/Countries'
 
 //for useEffect
 //const App = () => {
-const App = (props) => {
-
+const App = () => {
   //for useEffect
   const [notes, setNotes] = useState([])  
   //for props w/o useEffect

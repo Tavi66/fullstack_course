@@ -1,39 +1,26 @@
 import React, {useState,useEffect} from 'react'
 import axios from 'axios'
     
-// const Country = ({country, search}) => {
-
-//     const NAME = country.toUpperCase()
-//     const FILTER = search.toUpperCase()
-//     console.log('NAME.search(FILTER): ', NAME.search(FILTER))
-//     if(NAME.search(FILTER) > -1)
-//    { 
-//        return(
-//         <li>
-//            {country} 
-//         </li>
-//     )
-//     } else return(null)
-// }
-
-    const CountryList = ({list, info, setShowInfo, showInfo,setCountryResult, countryResult}) => {
+const CountryList = ({list, info, setShowInfo, showInfo,setCountryResult, countryResult}) => {
     let countryName = '...'
     let RESULT = []
-    console.log('START')
 
     const handleViewClick = (country) => {
+        //set info to false to hide info if info is already showing
+        //when same button is clicked
+        if(showInfo && countryResult.name === country)
+        setShowInfo(false)
+        
         countryName = country
         console.log(countryName, ' view button clicked.')
+
         //console.log('result var (from handleViewClick): ', result)
 
         info.forEach(element => {
         if(element.name === countryName)
         {
-          //result = true
           if(!showInfo)
           setShowInfo(!showInfo)
-
-          console.log('element.name: ', element.name)
           console.log('countryName: ', countryName)
           console.log(countryName, 'info: ', element)
           setCountryResult(element)
@@ -41,13 +28,12 @@ import axios from 'axios'
         });        
     }
 
-    console.log(list, 'length: ', list.length)
+    //console.log(list, 'length: ', list.length)
     if(list.length > 10)
     setShowInfo(false)
+    //Show list of countries if length of list is less or equal to 10
     if(list.length < 11)
     {
-        //set result view state to true if search is one result
-        //change view to respective info
         if(list.length === 1)
         {
             if(!showInfo && countryResult !== list[0].name)
@@ -59,7 +45,6 @@ import axios from 'axios'
                 
                 if(element.name === countryName)
                 {
-                  console.log('element.name: ', element.name)
                   console.log('countryName: ', countryName)
                   console.log(countryName, 'info: ', element)
                   setCountryResult(element)
@@ -67,13 +52,13 @@ import axios from 'axios'
             });
         }
 
-
+        //map each country in a li element with a button
         RESULT = list.map(country => <li 
         key={country.name}>{country.name}
         {/* <button onClick ={() => console.log(country, ': view button clicked.')}>view</button> */}
         {/* <button onClick={() => handleView({country, info,result})} >view</button> */}
         {/* <button type='button' onClick={() => handleViewClick(country)}>view</button> */}
-        <button type='button' onClick={() => handleViewClick(country.name)}>{(showInfo && countryResult === country.name) ? "hide" : "view"}</button>
+        <button type='button' onClick={() => handleViewClick(country.name)}>{(showInfo && countryResult.name === country.name) ? "hide" : "view"}</button>
         </li>
         );
         
@@ -102,6 +87,56 @@ const DisplayView = ({countryName, info}) => {
     )
 }
 
+//Will request every time. 
+//1000 requests monthly limit
+const GetWeather = (location) => {
+    const url = 'http://api.weatherstack.com/current'
+    const params = {
+        access_key: process.env.REACT_APP_WEATHERSTACK_API_KEY,
+        query: location
+    }  
+
+    const [info,setInfo] = useState([])
+    const getInfo = () => {
+        return axios.get(url, {params})
+        .then(response => {
+            console.log('response (0): ', response.data)
+            return response.data
+        });
+    }
+
+    useEffect ( () => {
+    getInfo()
+    .then(response => {
+    console.log('response (1): ', response.current)
+    let list = []
+    list.push(response.current)
+    setInfo(list)
+    })
+    },[])    
+    console.log('info(1):', info)
+    
+    //.current obj
+    //Weather in location
+    //weather_icons
+    //temperature
+    //wind_speed wind_dir
+    //const data = weatherInfo.data
+
+    return info.length > 0 ? info.map(element => {
+    return (
+    <div key={location+'_weather'}>
+    Temperature: {element.temperature} <br/>
+    <img src={element.weather_icons[0]} alt='weather_icon'/> <br/>
+    Wind: {element.wind_speed} direction {element.wind_dir}<br/>
+        </div>
+        )  
+    }) :<div></div> 
+//    return(<div>
+        
+//     </div>)
+}
+
 const Countries = () =>
 {
 
@@ -111,8 +146,7 @@ const Countries = () =>
     const [countryNames, setCountryNames] = useState([])
     const [showInfo,setShowInfo] = useState(false)
     const [countryResult, setCountryResult] = useState('')
-    //const [countryList, setCountryList] = useState([])
-    //const showView = useState(false) // 0 multi result  view // 1 single result view
+
     const handleCountryChange = (event) => {
         console.log(event.target.value)
         setSearch(event.target.value)
@@ -124,7 +158,7 @@ const Countries = () =>
     }
 
     const handleKeyDown = (event) => {
-        console.log('key pressed: ', event.key)
+        //console.log('key pressed: ', event.key)
         if(event.key === "Backspace" && showInfo)
         setShowInfo(false)
     }
@@ -139,59 +173,34 @@ const Countries = () =>
             setCountries(countries)
             const cNames = countries.map(country => country.name) 
             setCountryNames(cNames)
-            console.log('country names: ',cNames)
+            //console.log('country names: ',cNames)
         });    
     }, [] );
-    
-
-    //isolate and store countries names
-    //BUG: too many renders and invalid function push 
-    //bc global arrays are not passed to function, local arrays not initialized
-    // countries.forEach(element=> {
-    //     const name = element.name
-    //     console.log('element.name: ',name)
-    //     //setCountryNames(countryNames.push(name))
-    // })
 
     const narrowList = () => {
 
-    const list = []
-    countryNames.forEach( country => 
-    {
-    const NAME = country.toUpperCase()
-    const FILTER = search.toUpperCase()
-    //console.log('NAME.search(FILTER): ', NAME.search(FILTER))
-    if(NAME.search(FILTER) > -1)
-   { 
-       list.push({
-           name: country    })
-    }
-    }
-    )
-
-    console.log(list, 'list length: ', list.length)
-    return list
-    // if(list.length < 11)     
-    // {
-    //     setCountryList(list)
-    //     console.log('list. ',list)
-    // }
-    // else
-    // {
-    //     setCountryList([])
-    //     console.log('list. ',list)
-    // }
+       const list = []
+       countryNames.forEach( country => 
+       {
+          const NAME = country.toUpperCase()
+          const FILTER = search.toUpperCase()
+          //console.log('NAME.search(FILTER): ', NAME.search(FILTER))
+          if(NAME.search(FILTER) > -1)
+            { 
+               list.push({ name: country })
+            }
+       })
+       //console.log(list, 'list length: ', list.length)
+       return list
     }
 
     const list = narrowList()
     const showCountry = () => showInfo ? <DisplayView key={countryResult.name+'_'} info={countryResult} countryName={countryResult.name}/> : ' '
-    //const rows = () => countryNames.map(element => <Country key={element} country={element} search={search}/>)
     const rows = () => <CountryList list ={list} info={countries} 
     setShowInfo={setShowInfo} showInfo={showInfo} setCountryResult={setCountryResult} countryResult={countryResult}/>
-    // const info = () => <CountryInfo list = {countries} name={narrowList()} result={viewResult}/>
-    // console.log(countryNames)
-    //countries.map(element => element.name )
-    //console.log('names: ', countryNames)
+    const weather = () => countryResult !== '' ? <GetWeather location={countryResult.name}/>:' '
+    console.log('Weather: ',weather())
+    console.log('rows(): ', rows())
     return(
         <div>
             <form>
@@ -202,8 +211,9 @@ const Countries = () =>
             {rows()}
             </ul>
             {showCountry()}
-            {/* {info()} */}
-            {/* <DisplayCountries countries={countries}/> */}
+            {countryResult !== '' ? <h3>Weather in {countryResult.name}</h3>:''}
+            {weather()}
+            {/* {weather ? <DisplayWeather weatherInfo = {weather}/> :'' } */}
         </div>
     )
 }
