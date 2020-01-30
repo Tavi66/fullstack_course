@@ -4,7 +4,7 @@
       "id": 1,
       "content": "HTML is easy",
       "date": "2019-05-30T17:30:31.098Z",
-      "important": true
+      "important": false
     },
     {
       "id": 2,
@@ -29,6 +29,24 @@
       "date": "2020-01-22T00:21:09.508Z",
       "important": true,
       "id": 5
+    },
+    {
+      "content": "top of her game",
+      "date": "2020-01-28T20:47:07.240Z",
+      "important": false,
+      "id": 6
+    },
+    {
+      "content": "where can I find a woman like that",
+      "date": "2020-01-28T20:48:14.313Z",
+      "important": true,
+      "id": 7
+    },
+    {
+      "content": "like jessie's girl",
+      "date": "2020-01-28T20:48:45.365Z",
+      "important": true,
+      "id": 8
     }
   ],
   "persons": [

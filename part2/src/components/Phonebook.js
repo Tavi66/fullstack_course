@@ -10,8 +10,8 @@ const FILTER = filter.toUpperCase()
 // }
   if(NAME.search(FILTER) > -1) 
 { 
-  console.log('name: ', name.toUpperCase())
-  console.log('filter: ', filter.toUpperCase())
+  //console.log('name: ', name.toUpperCase())
+  //console.log('filter: ', filter.toUpperCase())
   return(
     <li>
       {name} {number}

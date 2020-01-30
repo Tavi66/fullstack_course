@@ -1,11 +1,13 @@
 import React, {useState, useEffect} from 'react' //,useEffect} from 'react'
 import ReactDOM from 'react-dom'
-import axios from 'axios'
+//import axios from 'axios'
 
 import Note from './components/Note'
 import Course from './components/Course'
 import Phonebook from './components/Phonebook'
 import Countries from './components/Countries'
+
+import noteService from './services/notes'
 
 //notes before effect
 // const notes = [
@@ -42,13 +44,15 @@ const App = () => {
   //async error with other useEffect examples (e.g. Phonebook useEffect)
   useEffect( () => {
     console.log('effect for notes')
-    axios
-    .get('http://localhost:3001/notes')
+    // axios
+    // .get('http://localhost:3001/notes')
+    noteService
+    .getAll()
     .then(response => {
-      const notes = response.data
       console.log('promise fufilled')
-      setNotes(notes)
+      setNotes(response)
      })
+     .catch(error => console.log(error))
   },[])
 
   // console.log('render', notes.length, 'notes')
@@ -77,23 +81,38 @@ const App = () => {
     }
 
     //axios POST save notes to DB
-    axios
-         .post('http://localhost:3001/notes', noteObj)
+    // axios
+    //      .post('http://localhost:3001/notes', noteObj)
+    noteService
+    .create(noteObj)
          .then(response => {
            console.log(response)
-         })
-
-    setNotes(notes.concat(noteObj))
+    setNotes(notes.concat(response))
     setNewNote('')
+         })
+    .catch(error => console.log(error))
+
 }
 
   const handleNoteChange = (event) => {
-    console.log(event.target.value)
+    //console.log(event.target.value)
     setNewNote(event.target.value)
   }
 
   const toggleImportanceOf = id => {
     console.log('Importance of ', id, ' needs to be toggled.')
+    //const url = `http://localhost:3001/notes/${id}`
+    const note = notes.find(n => n.id === id)
+    //copies previous note object with updated negated importance value
+    const changedNote = {...note, important: !note.important}
+    //maps old notes content if id does not match changed id, else add changed note
+    //axios.put(url,changedNote)
+    noteService
+    .update(id, changedNote)
+    .then(response => {
+      setNotes(notes.map(note => note.id !== id ? note : response))
+    })
+    .catch(error => console.log(error))
   }
 
   const course = [{

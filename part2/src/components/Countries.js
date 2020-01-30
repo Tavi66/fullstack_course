@@ -89,6 +89,10 @@ const DisplayView = ({countryName, info}) => {
 
 //Will request every time. 
 //1000 requests monthly limit
+//Works with most countries
+//Does not update with next country clicked 
+//or if dependency added, then refreshes more than once...
+//POSSIBLE: Move get weather to displayView to render
 const GetWeather = (location) => {
     const url = 'http://api.weatherstack.com/current'
     const params = {
@@ -97,16 +101,16 @@ const GetWeather = (location) => {
     }  
 
     const [info,setInfo] = useState([])
-    const getInfo = () => {
-        return axios.get(url, {params})
-        .then(response => {
-            console.log('response (0): ', response.data)
-            return response.data
-        });
-    }
+    // const getInfo = () => {
+    //     return 
+    // }
 
     useEffect ( () => {
-    getInfo()
+    //getInfo()
+    axios.get(url, {params})
+        .then(response => {
+            console.log('response (0): ', response.data)
+            return response.data})
     .then(response => {
     console.log('response (1): ', response.current)
     let list = []
@@ -128,7 +132,7 @@ const GetWeather = (location) => {
     <div key={location+'_weather'}>
     Temperature: {element.temperature} <br/>
     <img src={element.weather_icons[0]} alt='weather_icon'/> <br/>
-    Wind: {element.wind_speed} direction {element.wind_dir}<br/>
+    Wind: {element.wind_speed} kph direction {element.wind_dir}<br/>
         </div>
         )  
     }) :<div></div> 
@@ -199,8 +203,8 @@ const Countries = () =>
     const rows = () => <CountryList list ={list} info={countries} 
     setShowInfo={setShowInfo} showInfo={showInfo} setCountryResult={setCountryResult} countryResult={countryResult}/>
     const weather = () => countryResult !== '' ? <GetWeather location={countryResult.name}/>:' '
-    console.log('Weather: ',weather())
-    console.log('rows(): ', rows())
+    //console.log('Weather: ',weather())
+    //console.log('rows(): ', rows())
     return(
         <div>
             <form>
