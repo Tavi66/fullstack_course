@@ -3,7 +3,23 @@ import React, {useState, useEffect} from 'react'
 
 import personService from '../services/persons' 
 
-const PersonsInfo = ({setPersons, persons, id,name,number,filter}) => {
+const NewPersonNotification = ({message}) => {
+  return(
+    <div className='addPerson'>
+      {message}
+    </div>
+  )
+}
+
+const ErrorNotification = ({message}) => {
+  return(
+    <div className='error'>
+      {message}
+    </div>
+  )
+}
+
+const PersonsInfo = ({handleDeleteButton,name,number,filter}) => {
 //case-sensitive filter for first substring
 const NAME = name.toUpperCase()
 const FILTER = filter.toUpperCase()
@@ -16,7 +32,7 @@ const FILTER = filter.toUpperCase()
   return(
     <li>
       {name} {number}
-      <button onClick={()=>handleDeleteButton(id, name, setPersons, persons)}>delete</button>
+      <button onClick={handleDeleteButton}>delete</button>
     </li>
   )
 } else return(null)
@@ -43,7 +59,12 @@ const Phonebook = () => {
     //   { name: 'Mary Poppendieck', number: '39-23-6423122' }
     // ]) 
     const [persons, setPersons] = useState([])
+    const [ newName, setNewName ] = useState('')
+    const [ newNumber, setNewNumber ] = useState('')
+    const [filter, setFilter] = useState('')
 
+    const [message, setMessage] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null)
     //fetch persons data from json using useEffect
     useEffect( () => {
       console.log('effect from Phonebook')
@@ -57,9 +78,6 @@ const Phonebook = () => {
       .catch(error=>console.log(error))
     },[])
 
-    const [ newName, setNewName ] = useState('')
-    const [ newNumber, setNewNumber ] = useState('')
-    const [filter, setFilter] = useState('')
 
     const checkName = (event) => {
       event.preventDefault()
@@ -91,6 +109,15 @@ const Phonebook = () => {
       personService
       .update(id,updatedNumObj)
       .then(response => setPersons(persons.map(person => person.id === id ? response : person) ))
+      .catch(error=>{
+        setErrorMessage(
+          `Information of ${newName} has already been removed from the server.`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      })           
+      setPersons(persons.filter(person => person.id !== id))
     }
 
     const addPerson = () => {
@@ -98,8 +125,6 @@ const Phonebook = () => {
         name: newName,
         number: newNumber
       }       
-      //console.log('persons: ', persons)
-      //check if added name exists already
       //when user submits, array is searched. 
       //if defined, then display alert. if undef, add name
 
@@ -110,9 +135,14 @@ const Phonebook = () => {
         setPersons(persons.concat(response))
         console.log('response: ', response)
         setNewName('')
-        setNewNumber('')}
+        setNewNumber('')
+        setMessage(`Added ${newName}.`)
+        setTimeout( () => {
+          setMessage(null)
+        },5000)
+      }
       )
-      .catch(error=>console.log(error))
+
     }
 
     const handleNameChange = (event) => {
@@ -131,7 +161,10 @@ const Phonebook = () => {
     }
 
   const rows = () => persons.map(
-    person => <PersonsInfo setPersons = {setPersons} persons={persons} id={person.id} filter={filter} key={person.name} name={person.name} number={person.number}/>)
+    person => <PersonsInfo handleDeleteButton={
+      ()=>handleDeleteButton(person.id, person.name, setPersons,persons)} 
+    id={person.id} filter={filter} key={person.name} name={person.name} number={person.number}
+    />)
 
   // const updatePersons = (id) => {
   //   console.log('Updating...')
@@ -176,6 +209,8 @@ const Phonebook = () => {
     return (
       <div>
         <h2>Phonebook</h2>
+        { message !== null ? <NewPersonNotification message={message}/> : ''}
+        { errorMessage !== null ? <ErrorNotification message={errorMessage}/> : ''}
         filter: <input onChange={handleFilterChange} />
         <div> debug: {newName} </div>
         <form onSubmit={checkName}>

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react' //,useEffect} from 'react'
 import ReactDOM from 'react-dom'
-//import axios from 'axios'
+
+import './index.css'
 
 import Note from './components/Note'
 import Course from './components/Course'
@@ -9,28 +10,28 @@ import Countries from './components/Countries'
 
 import noteService from './services/notes'
 
-//notes before effect
-// const notes = [
-//   {
-//     id: 1,
-//     content: 'HTML is easy',
-//     date: '2019-05-30T17:30:31.098Z',
-//     important: true
-//   },
-//   {
-//     id: 2,
-//     content: 'Browser can execute only Javascript',
-//     date: '2019-05-30T18:39:34.091Z',
-//     important: false
-//   },
-//   {
-//     id: 3,
-//     content: 'GET and POST are the most important methods of HTTP protocol',
-//     date: '2019-05-30T19:20:14.298Z',
-//     important: true
-//   }
-// ]
+const Notification = ({message}) => {
+  if(message === null)
+  return null
+  else{
+    return(
+      <div className="error">
+        {message}
+      </div>
+    )
+  }
+}
 
+const handleDeleteButton = (id, setNotes,notes) => {
+  if (window.confirm(`Delete note with id: ${id}?`))
+  {
+    console.log(`Deleting entry with id: ${id}`)
+    noteService
+     .remove(id)
+     .then( setNotes(notes.filter(note => note.id !== id )))
+     console.log('notes.filter: ', notes)
+}
+}
 //for useEffect
 //const App = () => {
 const App = () => {
@@ -40,6 +41,7 @@ const App = () => {
   //const [notes, setNotes] = useState(props.notes)  
   const [newNote, setNewNote] = useState('a new note...')
   const [showAll, setShowAll] = useState(true)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   //async error with other useEffect examples (e.g. Phonebook useEffect)
   useEffect( () => {
@@ -62,7 +64,8 @@ const App = () => {
   : notes.filter(note => note.important)
 
   const rows = () => notesToShow.map(note =>  
-    <Note 
+    <Note
+         handleDeleteButton = {() => handleDeleteButton(note.id,setNotes,notes)} 
          key={note.id} 
          note={note}
          toggleImportance = {() => toggleImportanceOf(note.id)}
@@ -77,7 +80,6 @@ const App = () => {
       content: newNote,
       date: new Date().toISOString(),
       important: Math.random() > 0.5,
-      id:notes.length + 1,
     }
 
     //axios POST save notes to DB
@@ -112,7 +114,15 @@ const App = () => {
     .then(response => {
       setNotes(notes.map(note => note.id !== id ? note : response))
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      setErrorMessage(
+        `Note: ${note.content} was already deleted from the server.`
+      );
+      setTimeout( () => {
+        setErrorMessage(null)
+      },5000);
+      setNotes(notes.filter(n => n.id !== id));
+    })
   }
 
   const course = [{
@@ -167,6 +177,7 @@ const App = () => {
       <h1>Phonebook</h1>
       <Phonebook/>
       <h1>Notes</h1>
+      {errorMessage !== null ? <Notification message={errorMessage}/> : ''}
       <ul>
       {rows()}
       </ul>

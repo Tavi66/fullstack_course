@@ -44,15 +44,9 @@
     },
     {
       "content": "like jessie's girl",
-      "date": "2020-01-28T20:48:45.365Z",
+      "date": "2020-01-31T02:24:04.369Z",
       "important": true,
-      "id": 8
-    },
-    {
-      "content": "a new note...",
-      "date": "2020-01-30T05:17:30.509Z",
-      "important": true,
-      "id": 9
+      "id": 14
     }
   ],
   "persons": [
@@ -82,11 +76,6 @@
       "id": 5
     },
     {
-      "name": "Elsa",
-      "number": "fro-zen-001",
-      "id": 17
-    },
-    {
       "name": "scooby",
       "number": "+1 010 22 45 346",
       "id": 20
@@ -95,6 +84,16 @@
       "name": "sven",
       "number": "+33 49 35 12 46 77",
       "id": 22
+    },
+    {
+      "name": "Elsa",
+      "number": "froz-en-001",
+      "id": 23
+    },
+    {
+      "name": "elsa",
+      "number": "fro-zen-002",
+      "id": 24
     }
   ]
 }
